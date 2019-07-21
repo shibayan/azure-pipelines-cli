@@ -1,0 +1,94 @@
+trigger:
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - v*
+
+variables:
+  dotnetSdkVersion: '2.2.301'
+  isGitHubTag: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/v')]
+
+stages:
+- stage: Test_Build
+  jobs:
+  - job: Test_Build
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: $(dotnetSdkVersion)
+      displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+      displayName: 'Test Build'
+
+- stage: Build
+  dependsOn:
+  - Test_Build
+  condition: and(succeeded(), eq(variables['isGitHubTag'], 'true'))
+  jobs:
+  - job: Build
+    strategy:
+      matrix:
+        linux:
+          artifact: 'linux-x64'
+          imageName: 'ubuntu-16.04'
+        macos:
+          artifact: 'macos-x64'
+          imageName: 'macos-10.14'
+        windows:
+          artifact: 'win-x64'
+          imageName: 'windows-2019'
+    pool:
+      vmImage: $(imageName)
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: $(dotnetSdkVersion)
+      displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
+
+    - script: |
+        cd AzurePipelinesCli
+        dotnet tool install -g dotnet-warp
+        dotnet warp -l aggressive
+      displayName: 'Build and Packing'
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: 'AzurePipelinesCli/pipeline*'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+      displayName: 'Copy artifact'
+
+    - publish: dist/AzurePipelinesCli
+      artifact: $(artifact)
+      displayName: 'Publish artifact'
+
+- stage: Publish
+  dependsOn:
+  - Build
+  condition: and(succeeded(), eq(variables['isGitHubTag'], 'true'))
+  jobs:
+  - job: Publish
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+    - checkout: none
+    - download: current
+
+    - task: GitHubRelease@0
+      inputs:
+        gitHubConnection: 'GitHub'
+        repositoryName: 'shibayan/azure-pipelines-cli'
+        action: 'edit'
+        tag: '$(Build.SourceBranchName)'
+        assets: '$(Pipeline.Workspace)/*'
+        assetUploadMode: 'replace'
+        isDraft: false
