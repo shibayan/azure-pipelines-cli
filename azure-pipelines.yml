@@ -9,6 +9,7 @@ stages:
       vmImage: 'windows-2019'
     steps:
     - script: |
+        cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
         dotnet warp -l aggressive -o %System_DefaultWorkingDirectory%/pipeline.exe
       displayName: 'Build and Packing'
@@ -24,6 +25,7 @@ stages:
       vmImage: 'ubuntu-16.04'
     steps:
     - script: |
+        cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
         dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
       displayName: 'Build and Packing'
@@ -39,6 +41,7 @@ stages:
       vmImage: 'macOS-10.14'
     steps:
     - script: |
+        cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
         dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
       displayName: 'Build and Packing'
@@ -48,6 +51,10 @@ stages:
       displayName: 'Publish artifact'
 
 - stage: Publish
+  dependsOn:
+  - Build_Windows
+  - Build_Linux
+  - Build_MacOS
   jobs:
   - job: Publish
     pool:
