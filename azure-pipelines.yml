@@ -9,6 +9,7 @@ trigger:
 variables:
   dotnetSdkVersion: '2.2.301'
   isGitHubTag: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/v')]
+  isPreRelease: $[endsWith(variables['Build.SourceBranchName'], '-preview')]
 
 stages:
 - stage: Test_Build
@@ -118,3 +119,4 @@ stages:
         tag: '$(Build.SourceBranchName)'
         assets: '$(Pipeline.Workspace)/*.zip'
         assetUploadMode: 'replace'
+        isPreRelease: $(isPreRelease)
