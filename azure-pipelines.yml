@@ -15,7 +15,7 @@ stages:
   jobs:
   - job: Test_Build
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'ubuntu-16.04'
     steps:
     - task: UseDotNet@2
       inputs:
@@ -83,11 +83,38 @@ stages:
     - checkout: none
     - download: current
 
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Pipeline.Workspace)/linux-x64'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Pipeline.Workspace)/pipeline-linux-x64.zip'
+        replaceExistingArchive: true
+      displayName: 'Archive linux-x64'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Pipeline.Workspace)/macos-x64'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Pipeline.Workspace)/pipeline-macos-x64.zip'
+        replaceExistingArchive: true
+      displayName: 'Archive macos-x64'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Pipeline.Workspace)/win-x64'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Pipeline.Workspace)/pipeline-win-x64.zip'
+        replaceExistingArchive: true
+      displayName: 'Archive win-x64'
+
     - task: GitHubRelease@0
       inputs:
         gitHubConnection: 'GitHub'
         repositoryName: 'shibayan/azure-pipelines-cli'
         action: 'edit'
         tag: '$(Build.SourceBranchName)'
-        assets: '$(Pipeline.Workspace)/**/*'
+        assets: '$(Pipeline.Workspace)/*.zip'
         assetUploadMode: 'replace'
