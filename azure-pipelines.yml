@@ -11,10 +11,10 @@ stages:
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive -o %System_DefaultWorkingDirectory%/pipeline.exe
+        dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
-    - publish: pipeline.exe
+    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline.exe
       artifact: win-x64
       displayName: 'Publish artifact'
 
@@ -27,10 +27,10 @@ stages:
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
+        dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
-    - publish: pipeline
+    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline
       artifact: linux-x64
       displayName: 'Publish artifact'
 
@@ -43,10 +43,10 @@ stages:
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
+        dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
-    - publish: pipeline
+    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline
       artifact: macos-x64
       displayName: 'Publish artifact'
 
