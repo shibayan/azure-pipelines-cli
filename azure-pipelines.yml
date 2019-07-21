@@ -1,0 +1,57 @@
+trigger:
+- master
+
+stages:
+- stage: Build_Windows
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - script: |
+        dotnet tool install -g dotnet-warp
+        dotnet warp -l aggressive -o %System_DefaultWorkingDirectory%/pipeline.exe
+      displayName: 'Build and Packing'
+
+    - publish: pipeline.exe
+      artifact: win-x64
+      displayName: 'Publish artifact'
+
+- stage: Build_Linux
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+    - script: |
+        dotnet tool install -g dotnet-warp
+        dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
+      displayName: 'Build and Packing'
+
+    - publish: pipeline
+      artifact: linux-x64
+      displayName: 'Publish artifact'
+
+- stage: Build_MacOS
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'macOS-10.14'
+    steps:
+    - script: |
+        dotnet tool install -g dotnet-warp
+        dotnet warp -l aggressive -o $(System.DefaultWorkingDirectory)/pipeline
+      displayName: 'Build and Packing'
+
+    - publish: pipeline
+      artifact: macos-x64
+      displayName: 'Publish artifact'
+
+- stage: Publish
+  jobs:
+  - job: Publish
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+    - checkout: none
+    - download: current
