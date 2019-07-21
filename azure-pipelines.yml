@@ -11,7 +11,7 @@ stages:
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive
+        dotnet warp -l aggressive --verbose
       displayName: 'Build and Packing'
 
     - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline.exe
