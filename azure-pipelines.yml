@@ -89,6 +89,5 @@ stages:
         repositoryName: 'shibayan/azure-pipelines-cli'
         action: 'edit'
         tag: '$(Build.SourceBranchName)'
-        assets: '$(Pipeline.Workspace)/*'
+        assets: '$(Pipeline.Workspace)/**/*'
         assetUploadMode: 'replace'
-        isDraft: false
