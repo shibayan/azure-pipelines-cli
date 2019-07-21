@@ -32,7 +32,6 @@ stages:
 - stage: Build
   dependsOn:
   - Test_Build
-  condition: and(succeeded(), eq(variables['isGitHubTag'], 'true'))
   jobs:
   - job: Build
     strategy:
