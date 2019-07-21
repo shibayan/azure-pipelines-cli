@@ -64,9 +64,9 @@ stages:
     - task: CopyFiles@2
       inputs:
         Contents: 'AzurePipelinesCli/pipeline*'
-        TargetFolder: '$(System.DefaultWorkingDirectory)'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
 
-    - publish: AzurePipelinesCli
+    - publish: dist/AzurePipelinesCli
       artifact: $(artifact)
       displayName: 'Publish artifact'
 
@@ -81,3 +81,13 @@ stages:
     steps:
     - checkout: none
     - download: current
+
+    - task: GitHubRelease@0
+      inputs:
+        gitHubConnection: 'GitHub'
+        repositoryName: 'shibayan/azure-pipelines-cli'
+        action: 'edit'
+        tag: '$(Build.SourceBranchName)'
+        assets: '$(Pipeline.Workspace)/*'
+        assetUploadMode: 'replace'
+        isDraft: false
