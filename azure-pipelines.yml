@@ -1,13 +1,19 @@
 trigger:
-- master
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - v*
 
 variables:
   dotnetSdkVersion: '2.2.301'
+  isGitHubTag: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/v')]
 
 stages:
-- stage: Build_Windows
+- stage: Test_Build
   jobs:
-  - job: Build
+  - job: Test_Build
     pool:
       vmImage: 'windows-2019'
     steps:
@@ -15,27 +21,40 @@ stages:
       inputs:
         packageType: 'sdk'
         version: $(dotnetSdkVersion)
+      displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
 
-    - script: |
-        cd AzurePipelinesCli
-        dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive
-      displayName: 'Build and Packing'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+      displayName: 'Test Build'
 
-    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline.exe
-      artifact: win-x64
-      displayName: 'Publish artifact'
-
-- stage: Build_Linux
+- stage: Build
+  dependsOn:
+  - Test_Build
+  condition: and(succeeded(), eq(variables['isGitHubTag'], 'true'))
   jobs:
   - job: Build
+    strategy:
+      maxParallel: 3
+      matrix:
+        linux:
+          artifact: 'linux-x64'
+          imageName: 'ubuntu-16.04'
+        macos:
+          artifact: 'macos-x64'
+          imageName: 'macos-10.14'
+        windows:
+          artifact: 'win-x64'
+          imageName: 'windows-2019'
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: $(imageName)
     steps:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
         version: $(dotnetSdkVersion)
+      displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
 
     - script: |
         cd AzurePipelinesCli
@@ -43,36 +62,14 @@ stages:
         dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
-    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline
-      artifact: linux-x64
-      displayName: 'Publish artifact'
-
-- stage: Build_MacOS
-  jobs:
-  - job: Build
-    pool:
-      vmImage: 'macOS-10.14'
-    steps:
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: $(dotnetSdkVersion)
-
-    - script: |
-        cd AzurePipelinesCli
-        dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive
-      displayName: 'Build and Packing'
-
-    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline
-      artifact: macos-x64
+    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli
+      artifact: $(artifact)
       displayName: 'Publish artifact'
 
 - stage: Publish
   dependsOn:
-  - Build_Windows
-  - Build_Linux
-  - Build_MacOS
+  - Build
+  condition: and(succeeded(), eq(variables['isGitHubTag'], 'true'))
   jobs:
   - job: Publish
     pool:
