@@ -61,7 +61,12 @@ stages:
         dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
-    - publish: $(Build.SourcesDirectory)/AzurePipelinesCli
+    - task: CopyFiles@2
+      inputs:
+        Contents: 'AzurePipelinesCli/pipeline*'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+
+    - publish: dist
       artifact: $(artifact)
       displayName: 'Publish artifact'
 
