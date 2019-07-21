@@ -1,6 +1,9 @@
 trigger:
 - master
 
+variables:
+  dotnetSdkVersion: '2.2.301'
+
 stages:
 - stage: Build_Windows
   jobs:
@@ -8,10 +11,15 @@ stages:
     pool:
       vmImage: 'windows-2019'
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: $(dotnetSdkVersion)
+
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive --verbose
+        dotnet warp -l aggressive
       displayName: 'Build and Packing'
 
     - publish: $(Build.SourcesDirectory)/AzurePipelinesCli/pipeline.exe
@@ -24,6 +32,11 @@ stages:
     pool:
       vmImage: 'ubuntu-16.04'
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: $(dotnetSdkVersion)
+
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
@@ -40,6 +53,11 @@ stages:
     pool:
       vmImage: 'macOS-10.14'
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: $(dotnetSdkVersion)
+
     - script: |
         cd AzurePipelinesCli
         dotnet tool install -g dotnet-warp
