@@ -61,7 +61,7 @@ stages:
 
     - bash: |
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive -p Version:$(PackageVersion)
+        dotnet warp -l aggressive -p:Version=$(PackageVersion)
       workingDirectory: $(Build.SourcesDirectory)/AzurePipelinesCli
       displayName: 'Build and Packing'
 
