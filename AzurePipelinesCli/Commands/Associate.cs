@@ -11,14 +11,14 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Create an artifact link, artifact location is required to be a file container path, VC path or UNC share path.";
 
-            Add(new Option("--artifactname", "artifact name (Required)")
+            Add(new Argument<string>("artifactname")
             {
-                Argument = new Argument<string>()
+                Description = "artifact name"
             });
 
-            Add(new Option("--type", "container|filepath|versioncontrol|gitref|tfvclabel, artifact type (Required)")
+            Add(new Argument<string>("type")
             {
-                Argument = new Argument<string>()
+                Description = "container|filepath|versioncontrol|gitref|tfvclabel, artifact type"
             });
 
             Add(new Argument<string>("location")

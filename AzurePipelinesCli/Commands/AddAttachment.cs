@@ -11,14 +11,14 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Upload and attach attachment to current timeline record.";
 
-            Add(new Option("--type", "attachment type (Required)")
+            Add(new Argument<string>("type")
             {
-                Argument = new Argument<string>()
+                Description = "attachment type"
             });
 
-            Add(new Option("--name", "attachment name (Required)")
+            Add(new Argument<string>("name")
             {
-                Argument = new Argument<string>()
+                Description = "attachment name"
             });
 
             Add(new Argument<string>("path")

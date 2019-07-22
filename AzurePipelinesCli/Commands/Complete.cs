@@ -11,7 +11,7 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Finish timeline record for current task, set task result and current operation.";
 
-            Add(new Option("--result", "Succeeded|SucceededWithIssues|Failed|Canceled|Skipped")
+            Add(new Option("--result", "Optional: Succeeded|SucceededWithIssues|Failed|Canceled|Skipped")
             {
                 Argument = new Argument<string>()
             });

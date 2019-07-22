@@ -11,9 +11,9 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Set progress and current operation for current task.";
 
-            Add(new Option("--value", "percentage of completion")
+            Add(new Argument<int>("value")
             {
-                Argument = new Argument<int>()
+                Description = "percentage of completion"
             });
 
             Add(new Argument<string>("operation")

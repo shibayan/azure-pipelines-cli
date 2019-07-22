@@ -9,7 +9,7 @@ namespace AzurePipelinesCli.Commands
         public UploadLog()
             : base("uploadlog")
         {
-            Description = "Upload user interested log to build’s container “logs\\tool” folder.";
+            Description = "Upload user interested log to build’s container \"logs\\tool\" folder.";
 
             Add(new Argument<string>("path")
             {

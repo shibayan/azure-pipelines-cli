@@ -12,19 +12,6 @@ namespace AzurePipelinesCli
         {
             var rootCommand = new RootCommand("Azure Pipelines commands utility")
             {
-                new Command("task", "task commands")
-                {
-                    new AddAttachment(),
-                    new Complete(),
-                    new LogDetail(),
-                    new LogIssue(),
-                    new PrependPath(),
-                    new SetEndpoint(),
-                    new SetProgress(),
-                    new SetVariable(),
-                    new UploadFile(),
-                    new UploadSummary()
-                },
                 new Command("artifact", "artifact commands")
                 {
                     new Associate(),
@@ -39,6 +26,19 @@ namespace AzurePipelinesCli
                 new Command("release", "release commands")
                 {
                     new UpdateReleaseName()
+                },
+                new Command("task", "task commands")
+                {
+                    new AddAttachment(),
+                    new Complete(),
+                    new LogDetail(),
+                    new LogIssue(),
+                    new PrependPath(),
+                    new SetEndpoint(),
+                    new SetProgress(),
+                    new SetVariable(),
+                    new UploadFile(),
+                    new UploadSummary()
                 }
             };
 
