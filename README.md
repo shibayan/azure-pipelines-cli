@@ -6,7 +6,7 @@
 
 ## Download CLI
 
-Download [latest release](https://github.com/shibayan/azure-pipelines-cli/releases)
+Download [latest release](https://github.com/shibayan/azure-pipelines-cli/releases/latest)
 
 ## Commands example
 
