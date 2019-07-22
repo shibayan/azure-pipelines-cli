@@ -11,26 +11,29 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Sets a variable in the variable service of taskcontext.";
 
-            Add(new Option("--variable", "variable name (Required)")
+            Add(new Option("--issecret")
             {
-                Argument = new Argument<string>()
+                Description = "Optional: value is secret"
             });
 
-            Add(new Option("--issecret"));
+            Add(new Argument<string>("variable")
+            {
+                Description = "variable name"
+            });
 
             Add(new Argument<string>("value")
             {
                 Description = "value for variable"
             });
 
-            Handler = CommandHandler.Create<string, bool, string>(Execute);
+            Handler = CommandHandler.Create<bool, string, string>(Execute);
         }
 
-        private void Execute(string variable, bool issecret, string value)
+        private void Execute(bool issecret, string variable, string value)
         {
             var command = new PipelineCommandBuilder("task.setvariable", value)
-                          .AddProperty(nameof(variable), variable)
                           .AddProperty(nameof(issecret), issecret)
+                          .AddProperty(nameof(variable), variable)
                           .Build();
 
             Console.WriteLine(command);

@@ -11,14 +11,14 @@ namespace AzurePipelinesCli.Commands
         {
             Description = "Upload local file into a file container folder, create artifact if artifactname provided.";
 
-            Add(new Option("--containerfolder", "folder that the file will upload to, folder will be created if needed. (Required)")
+            Add(new Option("--artifactname", "Optional: artifact name")
             {
                 Argument = new Argument<string>()
             });
 
-            Add(new Option("--artifactname", "artifact name")
+            Add(new Argument<string>("containerfolder")
             {
-                Argument = new Argument<string>()
+                Description = "folder that the file will upload to, folder will be created if needed."
             });
 
             Add(new Argument<string>("path")
@@ -29,7 +29,7 @@ namespace AzurePipelinesCli.Commands
             Handler = CommandHandler.Create<string, string, string>(Execute);
         }
 
-        private void Execute(string containerfolder, string artifactname, string path)
+        private void Execute(string artifactname, string containerfolder, string path)
         {
             var command = new PipelineCommandBuilder("artifact.upload", path)
                           .AddProperty(nameof(containerfolder), containerfolder)
