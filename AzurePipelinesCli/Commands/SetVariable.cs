@@ -16,6 +16,11 @@ namespace AzurePipelinesCli.Commands
                 Description = "Optional: value is secret"
             });
 
+            Add(new Option("--isoutput")
+            {
+                Description = "Optional: mark it as an output variable"
+            });
+
             Add(new Argument<string>("variable")
             {
                 Description = "variable name"
@@ -26,13 +31,14 @@ namespace AzurePipelinesCli.Commands
                 Description = "value for variable"
             });
 
-            Handler = CommandHandler.Create<bool, string, string>(Execute);
+            Handler = CommandHandler.Create<bool, bool, string, string>(Execute);
         }
 
-        private void Execute(bool issecret, string variable, string value)
+        private void Execute(bool issecret, bool isoutput, string variable, string value)
         {
             var command = new PipelineCommandBuilder("task.setvariable", value)
                           .AddProperty(nameof(issecret), issecret)
+                          .AddProperty(nameof(isoutput), isoutput)
                           .AddProperty(nameof(variable), variable)
                           .Build();
 
