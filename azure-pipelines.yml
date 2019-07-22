@@ -56,10 +56,13 @@ stages:
         version: $(dotnetSdkVersion)
       displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
 
-    - script: |
-        cd AzurePipelinesCli
+    - powershell: 'echo "##vso[task.setvariable variable=PackageVersion]$($env:Build_SourceBranchName.Substring(1))"'
+      displayName: 'Set PackageVersion'
+
+    - bash: |
         dotnet tool install -g dotnet-warp
-        dotnet warp -l aggressive
+        dotnet warp -l aggressive -p Version:$(PackageVersion)
+      workingDirectory: $(Build.SourcesDirectory)/AzurePipelinesCli
       displayName: 'Build and Packing'
 
     - task: CopyFiles@2
