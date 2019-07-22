@@ -56,7 +56,7 @@ stages:
         version: $(dotnetSdkVersion)
       displayName: 'Install .NET Core SDK $(dotnetSdkVersion)'
 
-    - powershell: 'echo "##vso[task.setvariable variable=PackageVersion]$($env:Build_SourceBranchName.Substring(1))"'
+    - bash: echo "##vso[task.setvariable variable=PackageVersion]${Build.SourceBranchName:1}"
       displayName: 'Set PackageVersion'
 
     - bash: |
